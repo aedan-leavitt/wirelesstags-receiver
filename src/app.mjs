@@ -57,7 +57,27 @@ const influx = new Influx.InfluxDB({
 const app = express();
 
 function toUnixSeconds(utcString) {
-    return Date.parse(`${utcString} UTC`) / 1000;
+    const candidates = [];
+
+    if (/^\d{4}-\d{2}-\d{2}T/.test(utcString) && !/[zZ]|[+-]\d{2}:\d{2}$/.test(utcString)) {
+        if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(utcString)) {
+            candidates.push(`${utcString}:00Z`);
+        }
+        candidates.push(`${utcString}Z`);
+    } else if (/^\d{4}-\d{2}-\d{2} /.test(utcString) && !/[zZ]|[+-]\d{2}:\d{2}$/.test(utcString)) {
+        candidates.push(`${utcString} UTC`);
+    }
+
+    candidates.push(utcString);
+
+    for (const candidate of candidates) {
+        const timestampMs = Date.parse(candidate);
+        if (!Number.isNaN(timestampMs)) {
+            return timestampMs / 1000;
+        }
+    }
+
+    throw new Error(`Unable to parse timestamp: ${utcString}`);
 }
 
 export function writeTemperaturePoint({ sensor, value, timestamp, source }) {
