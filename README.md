@@ -38,9 +38,9 @@ Once the dependencies are installed and environment variables are set, start the
 
 ### Estimated Temperature Tracking
 
-The server also records an estimated outdoor temperature for Willard, Utah so you can compare local sensor readings against a consistent reference. Sensor submissions are stored in InfluxDB with `source=reported`; weather-model values are stored in the same `temperature` measurement with `source=estimated`.
+The server also records an estimated outdoor temperature for a set area so you can compare local sensor readings against a consistent reference. Sensor submissions are stored in InfluxDB with `source=reported`; weather-model values are stored in the same `temperature` measurement with `source=estimated`.
 
-Default estimator settings:
+Estimator settings settings will need to be added for latitude and longitude:
 
 - `WEATHER_LATITUDE`
 - `WEATHER_LONGITUDE`
