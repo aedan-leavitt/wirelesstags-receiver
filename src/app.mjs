@@ -29,7 +29,8 @@ const influx = new Influx.InfluxDB({
                 value: Influx.FieldType.FLOAT,
             },
             tags: [
-                'sensor'
+                'sensor',
+                'source'
             ]
         },
 	{
@@ -55,6 +56,21 @@ const influx = new Influx.InfluxDB({
 
 const app = express();
 
+function toUnixSeconds(utcString) {
+    return Date.parse(`${utcString} UTC`) / 1000;
+}
+
+export function writeTemperaturePoint({ sensor, value, timestamp, source }) {
+    return influx.writePoints([
+        {
+            measurement: 'temperature',
+            tags: { sensor, source },
+            fields: { value },
+            timestamp,
+        }
+    ], { precision: 's' });
+}
+
 console.log(`Starting up with InfluxDB host: ${influxDbHost}`);
 app.set('trust proxy', 'loopback');
 
@@ -63,9 +79,7 @@ app.use(bodyParser.json());
 
 app.post('/measurement', (req, res) => {
     const measurement = req.body;
-    //console.log(JSON.stringify(measurement));
-    var utcString = measurement.time;
-    var timestamp = Date.parse(utcString + ' UTC') / 1000; // convert to seconds
+    const timestamp = toUnixSeconds(measurement.time);
 
     influx.writePoints([
         {
@@ -76,7 +90,7 @@ app.post('/measurement', (req, res) => {
         },
         {
             measurement: 'temperature',
-            tags: {sensor: measurement.name},
+            tags: {sensor: measurement.name, source: 'reported'},
             fields: {value: measurement.temp},
             timestamp,
         },

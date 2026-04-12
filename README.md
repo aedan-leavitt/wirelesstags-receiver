@@ -36,6 +36,21 @@ Once the dependencies are installed and environment variables are set, start the
 
 `npm start` 
 
+### Estimated Temperature Tracking
+
+The server also records an estimated outdoor temperature for Willard, Utah so you can compare local sensor readings against a consistent reference. Sensor submissions are stored in InfluxDB with `source=reported`; weather-model values are stored in the same `temperature` measurement with `source=estimated`.
+
+Default estimator settings:
+
+- `WEATHER_LATITUDE=41.409105`
+- `WEATHER_LONGITUDE=-112.036056`
+- `ESTIMATED_TEMPERATURE_SENSOR_NAME=Willard, UT`
+- `ESTIMATED_TEMPERATURE_POLL_INTERVAL_MS=900000`
+- `WEATHER_TEMPERATURE_UNIT=fahrenheit`
+- `WEATHER_TIMEZONE=UTC`
+
+Set `ESTIMATED_TEMPERATURE_ENABLED=false` to disable the polling job.
+
 ## Features and Usage
 
 The application initializes a server that actively listens for data from wireless tags. You can adapt and customize the application to your specific needs by modifying the source code, particularly focusing on the `app.mjs` file.
