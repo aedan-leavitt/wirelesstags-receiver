@@ -87,7 +87,7 @@
           "resultFormat": "time_series"
         }
       ],
-      "timeFrom": "now-24h",
+      "timeFrom": "now/d",
       "title": "Today's High",
       "transparent": true,
       "type": "stat"
@@ -156,6 +156,7 @@
           "resultFormat": "time_series"
         }
       ],
+      "timeFrom": "now/d",
       "title": "Current",
       "transparent": true,
       "type": "stat"
@@ -224,7 +225,7 @@
           "resultFormat": "time_series"
         }
       ],
-      "timeFrom": "now-24h",
+      "timeFrom": "now/d",
       "title": "Today's Low",
       "transparent": true,
       "type": "stat"

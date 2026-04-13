@@ -56,28 +56,20 @@ const influx = new Influx.InfluxDB({
 
 const app = express();
 
-function toUnixSeconds(utcString) {
-    const candidates = [];
-
-    if (/^\d{4}-\d{2}-\d{2}T/.test(utcString) && !/[zZ]|[+-]\d{2}:\d{2}$/.test(utcString)) {
-        if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(utcString)) {
-            candidates.push(`${utcString}:00Z`);
-        }
-        candidates.push(`${utcString}Z`);
-    } else if (/^\d{4}-\d{2}-\d{2} /.test(utcString) && !/[zZ]|[+-]\d{2}:\d{2}$/.test(utcString)) {
-        candidates.push(`${utcString} UTC`);
+function toUnixSeconds(timestampString) {
+    const timestampMs = Date.parse(timestampString);
+    if (!Number.isNaN(timestampMs)) {
+        return timestampMs / 1000;
     }
 
-    candidates.push(utcString);
-
-    for (const candidate of candidates) {
-        const timestampMs = Date.parse(candidate);
-        if (!Number.isNaN(timestampMs)) {
-            return timestampMs / 1000;
+    if (/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}(:\d{2})?$/.test(timestampString)) {
+        const localTimestampMs = Date.parse(timestampString.replace(' ', 'T'));
+        if (!Number.isNaN(localTimestampMs)) {
+            return localTimestampMs / 1000;
         }
     }
 
-    throw new Error(`Unable to parse timestamp: ${utcString}`);
+    throw new Error(`Unable to parse timestamp: ${timestampString}`);
 }
 
 export function writeTemperaturePoint({ sensor, value, timestamp, source }) {
